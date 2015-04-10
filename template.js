@@ -1,7 +1,5 @@
-define([],function(){
-
-	var jsExp = new RegExp('<\\?.*?\\?>', 'g');
- 
+(function(window){
+    var jsExp = new RegExp('<\\?.*?\\?>', 'g');
 	var valueExp = new RegExp('<\\?=.*?\\?>', 'g');
 	 
 	var jsPrefixLength = '<?'.length;
@@ -88,5 +86,21 @@ define([],function(){
 		    };
 		};
 	};
-	return {__template__:__template__};
-});
+    
+    //amd like requirejs
+    if(typeof define === "function" && define.amd){
+        define([],function(){
+            return {__template__:__template__};
+        });
+    }
+    
+    //cmd like CommonJS
+    if ( typeof module === "object" && typeof module.exports === "object" ) {
+        module.exports = global.document ? __template__ : function( w ) {
+                if ( !w.document ) {
+                    throw new Error( "template requires a window with a document" );
+                }
+                return __template__;
+            };
+    }
+})(this);
