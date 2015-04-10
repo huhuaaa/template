@@ -5,23 +5,22 @@
         <script type="text/javascript" src="require.js"></script>
     </head>
     <body>
-        
+        <script type="text/template" id="template_id">
+            <div class="classname">
+                <?=name==1?'三元操作符':''?>
+                <?if(name==2){?>
+                <div class="classname"><?=name==1?'三元操作符1':''?></div>
+                <?}else{?>
+                <div class="classname"><?=name==1?'三元操作符2':''?></div>
+                <?}?>
+            </div>
+        </script>
+        <script type="text/javascript">
+            require(['template','jquery'], function(template,$){
+                tpl = template_id.innerHTML;
+                var tpl_func = __template__('test',tpl);
+                $('body').append(tpl_func({name:1}));
+            });
+        </script>
     </body>
-    <script type="text/template" id="template_id">
-        <div class="classname">
-            <?=name==1?'三元操作符':''?>
-            <?if(name==2){?>
-            <div class="classname"><?=name==1?'三元操作符1':''?></div>
-            <?}else{?>
-            <div class="classname"><?=name==1?'三元操作符2':''?></div>
-            <?}?>
-        </div>
-    </script>
-    <script type="text/javascript">
-        require(['template','jquery'], function(template,$){
-            tpl = template_id.innerHTML;
-            var tpl_func = __template__('test',tpl);
-            $('body').append(tpl_func({name:1}));
-        });
-    </script>
 </html>

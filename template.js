@@ -89,18 +89,18 @@
     
     //amd like requirejs
     if(typeof define === "function" && define.amd){
-        define([],function(){
+        define('template',[],function(){
             return {__template__:__template__};
         });
     }
     
     //cmd like CommonJS
     if ( typeof module === "object" && typeof module.exports === "object" ) {
-        module.exports = global.document ? __template__ : function( w ) {
+        module.exports = global.document ? {__template__:__template__} : function( w ) {
                 if ( !w.document ) {
                     throw new Error( "template requires a window with a document" );
                 }
-                return __template__;
+                return {__template__:__template__};
             };
     }
 })(this);
