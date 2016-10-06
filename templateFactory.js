@@ -1,10 +1,19 @@
 (function(){
     //js语句正则
-    var jsRegExp = new RegExp('<\\?(.*?)\\?>', 'g')
+    var jsRegExp = new RegExp('<%(.*?)%>', 'g')
     //值html转码后输出正则
-    var valueHtmlRegExp = new RegExp('<\\?=(.*?)\\?>', 'g')
+    var valueHtmlRegExp = new RegExp('<%=(.*?)%>', 'g')
     //值直接输出正则
-    var valueRegExp = new RegExp('<\\?==(.*?)\\?>', 'g')
+    var valueRegExp = new RegExp('<%==(.*?)%>', 'g')
+
+    var jsPrefixLength = '<%'.length;
+	var jsSuffixLength = '%>'.length;
+	 
+	var valuePrefixLength = '<%='.length;
+	var valueSuffixLength = '%>'.length;
+    var valueHtmlPrefixLength = '<%=='.length;
+	var valueHtmlSuffixLength = '%>'.length;
+    
     //模版函数缓存
     var cache = {}
     /**
@@ -31,12 +40,26 @@
         if(typeof template == 'string' && template.length > 0){
             tpl = template.replace(/(["'])/g, '\\$1')
                     // 保留换行
-                    // .replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t')
+                    .replace(/\n/g, '\\n').replace(/\r/g, '\\r')
+                    // .replace(/\t/g, '\\t')
                     // 压缩代码，去掉多余空白符
                     .replace(/>\s+/g, '>').replace(/\s+</g, '<')
-                    .replace(valueRegExp, '"+($1)+"')
-                    .replace(valueHtmlRegExp, '"+htmlspecialchars($1)+"')
-                    .replace(jsRegExp, '";$1;__t+="')
+            tpl = tpl.replace(valueRegExp, function(data) {
+		        data = data.substring(valueHtmlPrefixLength, data.length - valueHtmlSuffixLength).replace(/\\\"/g, '"').replace(/\\\'/g, "'");
+		        return '\"+(' + data + ')+\"';
+		    })
+            tpl = tpl.replace(valueHtmlRegExp, function(data) {
+		        data = data.substring(valuePrefixLength, data.length - valueSuffixLength).replace(/\\\"/g, '"').replace(/\\\'/g, "'");
+		        return '\"+htmlspecialchars(' + data + ')+\"';
+		    })
+		    tpl = tpl.replace(jsRegExp, function(data) {
+		        data = data.substring(jsPrefixLength, data.length - jsSuffixLength).replace(/\\"/g, '\"').replace(/\\'/g, '\'').replace(/\\r|\\n/g, '');
+		        return '\";' + data + '__t+=\"';
+		    })
+                    // .replace(valueRegExp, '"+($1)+"')
+                    // .replace(valueRegExp, '"+($1)+"')
+                    // .replace(valueHtmlRegExp, '"+htmlspecialchars($1)+"')
+                    // .replace(jsRegExp, '";$1;__t+="')
         }
         tpl = 'with(param || {}){var __t="' + tpl  + '";return __t;}'
         // console.log(tpl)
